@@ -1,0 +1,22 @@
+{
+    "name": "messagerie-back",
+    "version": "1.0.0",
+    "description": "",
+    "main": "main.js",
+    "type": "module",
+    "scripts": {
+        "start": "nodemon",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "test:message": "nodemon ./classes/Message.js",
+        "test:room": "nodemon ./classes/ChatRoom.js",
+        "test:user": "nodemon ./classes/User.js",
+        "test:total": "nodemon ./main.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "nodemon": "^2.0.22",
+        "socket.io": "^4.6.1"
+    }
+}
