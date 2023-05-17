@@ -12,10 +12,14 @@ io.on("connection", (socket) => {
         user = new User(username, socket.id);
     });
 
-    socket.on("CreateRoom", () => {
+    socket.on("CreateRoom", (roomName) => {
         currentChatRoom = new ChatRoom(roomName);
         socket.join(currentChatRoom);
-        socket.emit("UpdateCurrentChatRoom", currentChatRoom);
+        socket.emit(
+            "UpdateCurrentChatRoom",
+            currentChatRoom,
+            currentChatRoom.getHistory(10)
+        );
     });
 
     /* input = roomName: string
@@ -24,11 +28,17 @@ io.on("connection", (socket) => {
        ev: "UpdateCurrentChatRoom"
        data: currentChatRoom */
     socket.on("joinRoom", (roomName) => {
+        console.log("request to join => ", roomName);
         currentChatRoom = rooms.find(
             (element) => element.roomName === roomName
         );
+        if (!currentChatRoom) return;
         socket.join(roomName);
-        socket.emit("UpdateCurrentChatRoom", currentChatRoom);
+        socket.emit(
+            "UpdateCurrentChatRoom",
+            currentChatRoom,
+            currentChatRoom.getHistory(10)
+        );
     });
 
     socket.on("ChangeAuthorName", ({ username }) => {
@@ -36,18 +46,28 @@ io.on("connection", (socket) => {
     });
 
     socket.on("DeleteMessage", (id) => {
-        currentChatRoom.deleteMessage(id);
+        currentChatRoom?.deleteMessage(id);
     });
 
     socket.on("RequestChatRoom", (callback) => {
         callback(rooms);
     });
 
-    socket.on("RequestMessages", (currentChatRoom) => {
-        currentChatRoom.getHistory(roomName);
+    // currentChatRoom existe déjà, on ne l'attend pas
+    // socket.on("RequestMessages", (currentChatRoom) => {
+    //     du coup on ne fait rien avec la variables
+
+    //     currentChatRoom?.getHistory(roomName);
+    // });
+
+    socket.on("RequestMessages", (callback) => {
+        if (currentChatRoom) {
+            callback(currentChatRoom.getHistory(10));
+        }
     });
 
-    socket.on("NewMessage", (user, messageContent) => {
-        currentChatRoom.addMessage(user, messageContent);
+    socket.on("NewMessage", (messageContent) => {
+        console.log("newmessage =>", messageContent);
+        currentChatRoom?.addMessage(user, messageContent);
     });
 });
