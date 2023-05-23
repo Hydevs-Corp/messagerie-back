@@ -41,12 +41,18 @@ io.on("connection", (socket) => {
         );
     });
 
-    socket.on("ChangeAuthorName", ({ username }) => {
-        user.updateUsername(username);
-    });
-
-    socket.on("DeleteMessage", (id) => {
-        currentChatRoom?.deleteMessage(id);
+    socket.on("ChangeAuthorName", ({ userName }, callback) => {
+        console.log(userName, callback);
+        if (!user) {
+            user = new User(userName, socket.id);
+            console.log(userName);
+        } else {
+            user.updateUsername(userName);
+            console.log(userName);
+        }
+        console.log("backCallBack", callback);
+        console.log("ssss", user);
+        callback(user);
     });
 
     socket.on("RequestChatRoom", (callback) => {
@@ -69,5 +75,21 @@ io.on("connection", (socket) => {
     socket.on("NewMessage", (messageContent) => {
         console.log("newmessage =>", messageContent);
         currentChatRoom?.addMessage(user, messageContent);
+    });
+
+    socket.on("DeleteRoom", (roomName) => {
+        console.log(roomName);
+        let roomIndex = rooms.findIndex((e) => {
+            console.log("eee", e, roomName);
+            return e.roomName === roomName;
+        });
+        console.log("ererere", roomIndex, rooms);
+        rooms?.splice(roomIndex, 1);
+        console.log("ererere2", roomIndex, rooms);
+        io.emit("DeleteRoom", roomName);
+    });
+
+    socket.on("DeleteMessage", (id) => {
+        currentChatRoom?.deleteMessage(id);
     });
 });

@@ -20,9 +20,8 @@ class ChatRoom {
         io.to(this.roomName).emit("NewMessage", mess);
     }
     deleteMessage(id) {
-        this.#history = this.#history.filter((el) => {
-            id !== el.id;
-        });
+        console.log(id);
+        this.#history = this.#history.filter((el) => id !== el.id);
         io.to(this.roomName).emit("DeleteMessage", id);
     }
     getHistory(max) {
